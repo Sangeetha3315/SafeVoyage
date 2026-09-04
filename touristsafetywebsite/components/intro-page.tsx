@@ -59,7 +59,7 @@ export default function IntroPage({ onNavigate, userName }: IntroPageProps) {
         <div className="relative z-10 text-center max-w-5xl mx-auto px-4">
           <Badge className="mb-8 bg-gray-900/90 text-white border-white/30 text-lg px-6 py-3 fade-in-down backdrop-blur-sm">
             <Award className="h-4 w-4 mr-2" />
-            Welcome to SafeTour AI
+            Welcome to SafeVoyage
           </Badge>
 
           <h1
@@ -74,8 +74,8 @@ export default function IntroPage({ onNavigate, userName }: IntroPageProps) {
             className="text-xl lg:text-2xl text-white/90 text-balance mb-12 max-w-4xl mx-auto drop-shadow-lg fade-in-up"
             style={{ textShadow: "1px 1px 3px rgba(0,0,0,0.8)", animationDelay: "0.2s" }}
           >
-            Experience worry-free travel with AI-powered safety monitoring, real-time location tracking, and instant
-            emergency response systems designed to protect tourists worldwide.
+              Explore the SafeVoyage safety platform prototype. Location assistance, emergency coordination, and
+              intelligent safety insights will be added in future phases.
           </p>
 
           <div
@@ -149,7 +149,7 @@ export default function IntroPage({ onNavigate, userName }: IntroPageProps) {
               <CardContent>
                 <CardDescription className="text-lg mb-6 text-muted-foreground">
                   Monitor your safety status, view analytics, and get real-time insights about your travel security with
-                  AI-powered recommendations
+                  Safety insights foundation
                 </CardDescription>
                 <Button className="w-full bg-primary hover:bg-primary/90 text-lg py-3">
                   View Dashboard
@@ -373,14 +373,14 @@ export default function IntroPage({ onNavigate, userName }: IntroPageProps) {
               <div className="bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl p-3">
                 <Shield className="h-8 w-8 text-primary" />
               </div>
-              <span className="text-2xl font-bold text-foreground">SafeTour AI</span>
+                <span className="text-2xl font-bold text-foreground">SafeVoyage</span>
             </div>
             <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
               Smart Tourist Safety Monitoring System - Protecting travelers worldwide with cutting-edge AI technology
               and 24/7 emergency response
             </p>
             <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
-              <span>© 2024 SafeTour AI. All rights reserved.</span>
+              <span>© 2026 SafeVoyage. Prototype foundation.</span>
               <span>•</span>
               <span className="font-medium">Welcome, {userName}</span>
             </div>

@@ -141,7 +141,6 @@ export class EmergencyService {
     alerts.push(alert)
     this.saveSOSAlerts(alerts)
 
-    // Send notifications (simulated)
     await this.sendNotifications(alert)
 
     return alert
@@ -151,33 +150,16 @@ export class EmergencyService {
     const contacts = this.getEmergencyContacts()
     const selectedContacts = contacts.filter((c) => alert.contacts.includes(c.id))
 
-    // Simulate sending notifications
-    console.log("[v0] SOS Alert sent!")
-    console.log("[v0] Alert ID:", alert.id)
-    console.log("[v0] Blockchain ID:", alert.blockchainId) // Log blockchain ID
-    console.log("[v0] Message:", alert.message)
-    console.log(
-      "[v0] Location:",
-      alert.location ? `${alert.location.latitude}, ${alert.location.longitude}` : "Unknown",
-    )
-    console.log(
-      "[v0] Emergency Contacts:",
-      selectedContacts.map((c) => `${c.name} (${c.phone})`),
-    )
-
-    if (alert.includePolice) console.log("[v0] Police notified")
-    if (alert.includeAmbulance) console.log("[v0] Ambulance notified")
-    if (alert.includeFire) console.log("[v0] Fire department notified")
-
-    // In a real app, this would:
-    // 1. Send SMS/calls to emergency contacts
-    // 2. Contact local emergency services
-    // 3. Send push notifications
-    // 4. Update emergency response systems
-    // 5. Record on blockchain for immutable audit trail
-
-    // Simulate API calls
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    console.info("SafeVoyage prototype emergency request created", {
+      alertId: alert.id,
+      contactCount: selectedContacts.length,
+      hasLocation: Boolean(alert.location),
+      requestedServices: {
+        police: alert.includePolice,
+        ambulance: alert.includeAmbulance,
+        fire: alert.includeFire,
+      },
+    })
   }
 
   static getSOSAlerts(): SOSAlert[] {

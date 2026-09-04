@@ -1,9 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* Added Leaflet CSS import and removed Google Maps imports */
-@import url("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css");
-
 @custom-variant dark (&:is(.dark *));
 
 :root {

@@ -81,7 +81,7 @@ export function LocationTracker() {
       // Get high-accuracy GPS location with detailed information
       navigator.geolocation.getCurrentPosition(
         async (position) => {
-          const currentLocation = {
+          const currentLocation: LocationData = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
             accuracy: position.coords.accuracy,
@@ -365,7 +365,6 @@ export function LocationTracker() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleSearchLocation()}
-                size="sm"
               />
               <Button onClick={handleSearchLocation} size="sm" className="bg-purple-600 hover:bg-purple-700">
                 <Search className="h-4 w-4" />
@@ -398,7 +397,6 @@ export function LocationTracker() {
                   onChange={(e) => setManualLat(e.target.value)}
                   type="number"
                   step="any"
-                  size="sm"
                 />
                 <Input
                   placeholder="Longitude"
@@ -406,7 +404,6 @@ export function LocationTracker() {
                   onChange={(e) => setManualLng(e.target.value)}
                   type="number"
                   step="any"
-                  size="sm"
                 />
                 <Button
                   onClick={handleSetManualCoordinates}

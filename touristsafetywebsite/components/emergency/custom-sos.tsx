@@ -55,7 +55,7 @@ export function CustomSOS({ userId }: CustomSOSProps) {
         includeAuthorities,
       )
 
-      alert("Custom SOS alert sent successfully!")
+      alert("Emergency request created locally. Notification integrations are not configured yet.")
 
       // Reset form
       setMessage("")

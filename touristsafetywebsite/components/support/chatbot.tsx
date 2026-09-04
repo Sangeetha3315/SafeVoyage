@@ -32,7 +32,7 @@ export function Chatbot({ onClose, onEmergencyCall, onLocationHelp, onContactsHe
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Hello! I'm SafeTour AI Assistant. I can help you with emergency procedures, location tracking, safety tips, and more. How can I assist you today?",
+      text: "Hello! I'm the SafeVoyage safety assistant prototype. I can provide general safety guidance and help you find the existing location, contacts, and SOS tools.",
       sender: "bot",
       timestamp: new Date(),
       actions: [
@@ -87,7 +87,7 @@ export function Chatbot({ onClose, onEmergencyCall, onLocationHelp, onContactsHe
         break
       case "contact":
         response =
-          "📞 You can reach our support team through:\n\n• Emergency Hotline: +1-800-SAFETOUR (24/7)\n• Email: support@safetour.ai\n• Live Chat: Right here!\n\nHow would you prefer to get additional help?"
+          "📞 Support integrations are not configured in this prototype. For immediate danger, contact the local emergency service directly. I can also help you find the existing SOS and location tools."
         actions = [
           { label: "Call Support", action: () => onEmergencyCall?.() },
           { label: "Email Support", action: () => handleEmailSupport() },
@@ -125,9 +125,9 @@ export function Chatbot({ onClose, onEmergencyCall, onLocationHelp, onContactsHe
   const handleEmailSupport = () => {
     const subject = encodeURIComponent("SafeTour AI Support Request")
     const body = encodeURIComponent(
-      `Hello SafeTour AI Support Team,\n\nI need assistance with:\n\n[Please describe your issue]\n\nBest regards`,
+      `Hello SafeVoyage Support Team,\n\nI need assistance with:\n\n[Please describe your issue]\n\nBest regards`,
     )
-    window.location.href = `mailto:support@safetour.ai?subject=${subject}&body=${body}`
+    window.location.href = `mailto:support@safevoyage.example?subject=${subject}&body=${body}`
   }
 
   const addBotMessage = (text: string, actions?: Array<{ label: string; action: () => void }>) => {
@@ -174,7 +174,7 @@ export function Chatbot({ onClose, onEmergencyCall, onLocationHelp, onContactsHe
         handleQuickAction("contact")
       } else if (userInput.includes("sos")) {
         addBotMessage(
-          "🚨 The SOS feature is for emergencies. You can access it from the main dashboard. It will immediately alert your emergency contacts and local authorities with your location.",
+          "🚨 The SOS feature is for emergencies. You can access it from the main dashboard. In this prototype it creates a local emergency request; notification integrations are not configured yet.",
           [{ label: "Open SOS Features", action: () => onSOSHelp?.() }],
         )
       } else {
@@ -203,7 +203,7 @@ export function Chatbot({ onClose, onEmergencyCall, onLocationHelp, onContactsHe
       <div className="p-4 border-b bg-primary/5">
         <div className="flex items-center gap-2">
           <Bot className="h-5 w-5 text-primary" />
-          <span className="font-semibold">SafeTour AI Assistant</span>
+          <span className="font-semibold">SafeVoyage Safety Assistant</span>
           <div className="ml-auto flex items-center gap-1">
             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
             <span className="text-xs text-muted-foreground">Online</span>

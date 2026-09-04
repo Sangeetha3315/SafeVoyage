@@ -68,9 +68,7 @@ export default function HomePage({ user, onLogout }: HomePageProps) {
   }
 
   const handleEmergencyHotline = () => {
-    if (typeof window !== "undefined") {
-      window.location.href = "tel:+18007233868" // +1-800-SAFETOUR
-    }
+    alert("Emergency hotline integration is not configured. For immediate danger, contact your local emergency service directly.")
   }
 
   const handleLiveChat = () => {
@@ -78,8 +76,8 @@ export default function HomePage({ user, onLogout }: HomePageProps) {
   }
 
   const handleEmailSupport = () => {
-    const subject = encodeURIComponent("SafeTour AI Support Request")
-    const body = encodeURIComponent(`Hello SafeTour AI Support Team,
+    const subject = encodeURIComponent("SafeVoyage Support Request")
+    const body = encodeURIComponent(`Hello SafeVoyage Support Team,
 
 I need assistance with my SafeTour AI account.
 
@@ -100,19 +98,19 @@ Additional Information:
 Best regards,
 ${user.name}`)
 
-    const emailUrl = `mailto:support@safetour.ai?subject=${subject}&body=${body}`
+    const emailUrl = `mailto:support@safevoyage.example?subject=${subject}&body=${body}`
 
     try {
       if (typeof window !== "undefined") {
         window.location.href = emailUrl
 
         setTimeout(() => {
-          alert("Email client should have opened. If not, please manually send an email to: support@safetour.ai")
+          alert("Email client should have opened. If not, please manually send the request through your configured support channel.")
         }, 1000)
       }
     } catch (error) {
-      const emailText = `To: support@safetour.ai
-Subject: SafeTour AI Support Request
+      const emailText = `To: support@safevoyage.example
+    Subject: SafeVoyage Support Request
 
 Hello SafeTour AI Support Team,
 
@@ -137,12 +135,10 @@ ${user.name}`
 
       if (navigator.clipboard) {
         navigator.clipboard.writeText(emailText).then(() => {
-          alert(
-            "Email details copied to clipboard! Please paste into your email client and send to support@safetour.ai",
-          )
+          alert("Email details copied to clipboard. Please paste them into your configured support channel.")
         })
       } else {
-        alert("Please manually send an email to: support@safetour.ai with your support request")
+        alert("Please use your configured support channel to send the request.")
       }
     }
   }
@@ -182,7 +178,7 @@ ${user.name}`
               className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
             >
               <Shield className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold text-foreground">SafeTour AI</span>
+              <span className="text-xl font-bold text-foreground">SafeVoyage</span>
             </button>
           </div>
           <nav className="hidden md:flex items-center space-x-6">
@@ -463,7 +459,7 @@ ${user.name}`
                 onClick={handleEmergencyHotline}
               >
                 <Phone className="h-4 w-4 mr-2" />
-                Emergency Hotline: +1-800-SAFETOUR
+                Emergency hotline integration is not configured
                 <ExternalLink className="h-3 w-3 ml-2" />
               </Button>
 
@@ -482,7 +478,7 @@ ${user.name}`
                 onClick={handleEmailSupport}
               >
                 <Mail className="h-4 w-4 mr-2" />
-                Email Support: support@safetour.ai
+                Support email integration is not configured
                 <ExternalLink className="h-3 w-3 ml-2" />
               </Button>
             </div>
@@ -580,14 +576,14 @@ ${user.name}`
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-6">Stay Safe, Travel Smart</h2>
               <p className="text-lg text-muted-foreground mb-8">
-                Your safety is our priority. Use SafeTour AI for worry-free travel experiences.
+                Your safety is our priority. SafeVoyage is being developed as a location-aware tourist safety platform.
               </p>
             </div>
 
             <div className="border-t pt-8 text-center">
               <div className="flex items-center justify-center space-x-2 mb-4">
                 <Shield className="h-6 w-6 text-primary" />
-                <span className="text-lg font-bold">SafeTour AI</span>
+                <span className="text-lg font-bold">SafeVoyage</span>
               </div>
               <p className="text-sm text-muted-foreground">
                 © 2024 Smart Tourist Safety Monitoring System. All rights reserved.

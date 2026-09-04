@@ -91,7 +91,7 @@ export function SOSButton({ userId }: SOSButtonProps) {
           setShowCallInterface(false)
           setCallDetails(null)
         }}
-        location={lastAlert?.location}
+        location={lastAlert?.location ?? undefined}
       />
     )
   }
@@ -108,7 +108,7 @@ export function SOSButton({ userId }: SOSButtonProps) {
         <CardContent className="space-y-4">
           <Alert>
             <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>Emergency alert has been sent to your contacts and local authorities.</AlertDescription>
+            <AlertDescription>Emergency request created locally. Contact and authority notification integrations are not configured yet.</AlertDescription>
           </Alert>
 
           {lastAlert.blockchainId && (
@@ -148,9 +148,9 @@ export function SOSButton({ userId }: SOSButtonProps) {
             )}
 
             <div className="flex flex-wrap gap-2 mt-3">
-              {lastAlert.includePolice && <Badge variant="destructive">Police Notified</Badge>}
-              {lastAlert.includeAmbulance && <Badge variant="destructive">Ambulance Notified</Badge>}
-              {lastAlert.includeFire && <Badge variant="destructive">Fire Dept Notified</Badge>}
+              {lastAlert.includePolice && <Badge variant="secondary">Police requested</Badge>}
+              {lastAlert.includeAmbulance && <Badge variant="secondary">Ambulance requested</Badge>}
+              {lastAlert.includeFire && <Badge variant="secondary">Fire department requested</Badge>}
             </div>
           </div>
 
@@ -175,7 +175,7 @@ export function SOSButton({ userId }: SOSButtonProps) {
           <AlertTriangle className="h-5 w-5" />
           <span>Emergency SOS</span>
         </CardTitle>
-        <CardDescription>Send immediate emergency alert with your location to contacts and authorities</CardDescription>
+        <CardDescription>Create a local emergency request with your location for prototype testing</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Alert variant="destructive">

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { MapPin, Navigation, Crosshair, Satellite, Clock, Compass, Map, Loader2, ExternalLink } from "lucide-react"
+import { publicEnv } from "@/lib/config/public-env"
 
 interface InteractiveMapProps {
   onLocationSelect: (lat: number, lng: number) => void
@@ -25,11 +26,15 @@ export function InteractiveMap({ onLocationSelect, currentLocation, safetyZone }
   const [watchId, setWatchId] = useState<number | null>(null)
   const [isTracking, setIsTracking] = useState(false)
   const [mapError, setMapError] = useState<string | null>(null)
-  const mapRef = useRef<HTMLDivElement>(null)
+  const mapRef = useRef<HTMLIFrameElement>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
 
   const generateMapUrl = (lat: number, lng: number) => {
-    return `https://www.google.com/maps/embed/v1/view?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dkmvnRAoKlNOWo&center=${lat},${lng}&zoom=18&maptype=satellite`
+    if (publicEnv.mapsApiKey) {
+      return `https://www.google.com/maps/embed/v1/view?key=${publicEnv.mapsApiKey}&center=${lat},${lng}&zoom=18&maptype=satellite`
+    }
+
+    return `https://www.google.com/maps?q=${lat},${lng}&output=embed`
   }
 
   const generateDirectionsUrl = (lat: number, lng: number) => {

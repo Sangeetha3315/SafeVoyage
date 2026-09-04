@@ -39,11 +39,11 @@ export function LoginForm({ onLogin, onSignUp }: LoginFormProps) {
         <CardHeader className="text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <Shield className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold">SafeTour AI</span>
+            <span className="text-2xl font-bold">SafeVoyage</span>
           </div>
           <CardTitle>{isSignUp ? "Create Account" : "Welcome Back"}</CardTitle>
           <CardDescription>
-            {isSignUp ? "Join SafeTour AI for secure travel monitoring" : "Sign in to access your safety dashboard"}
+            {isSignUp ? "Join SafeVoyage for safer travel" : "Sign in to access your safety dashboard"}
           </CardDescription>
         </CardHeader>
         <CardContent>

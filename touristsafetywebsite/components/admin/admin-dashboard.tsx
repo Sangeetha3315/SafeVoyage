@@ -115,7 +115,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
           <div className="flex items-center space-x-3">
             <Shield className="h-8 w-8 text-primary" />
             <div>
-              <h1 className="text-2xl font-bold">SafeTour Admin</h1>
+              <h1 className="text-2xl font-bold">SafeVoyage Admin</h1>
               <p className="text-sm text-muted-foreground">Administrator Dashboard</p>
             </div>
           </div>

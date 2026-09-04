@@ -1,272 +1,169 @@
-# Tourist Safety Website
+# SafeVoyage
 
-A comprehensive web application designed to help tourists stay safe while traveling. The platform provides real-time emergency services, location tracking, safety tips, and administrative tools for managing tourist safety initiatives.
+SafeVoyage is a tourist safety platform foundation for location-aware safety assistance, emergency response coordination, incident reporting, and intelligent safety insights.
 
-## Features
+This repository extends an existing Next.js frontend prototype. Phase 1 establishes the application foundation while preserving the current browser-based demonstration at `/`.
 
-### For Tourists
-- **Emergency SOS Button**: Quick access to emergency services with one click
-- **Location Tracking**: Real-time location sharing with emergency contacts
-- **Interactive Maps**: View safe zones and identify risky areas
-- **Emergency Contacts**: Manage and organize emergency contact information
-- **AI Chatbot Support**: 24/7 instant support for safety questions
-- **Safety Overview Dashboard**: Real-time safety status and alerts
-- **Call Interface**: Direct emergency calling capabilities
+## Current Status
 
-### For Administrators
-- **Admin Dashboard**: Manage users, incidents, and safety data
-- **Incident Tracking**: Monitor and track reported incidents
-- **Blockchain Tracker**: Immutable record of safety events
-- **User Management**: Control and manage user accounts
-- **Analytics**: View safety statistics and trends
+The current application is a frontend prototype. It includes:
+
+- SafeVoyage branding and metadata
+- A Next.js App Router foundation
+- Reusable shadcn-style UI components
+- Prototype tourist and administrator screens
+- Browser geolocation and map presentation
+- Local emergency contact and SOS demonstrations
+- A keyword-based safety assistant UI
+- Route shells for future tourist and authority workflows
+- A structured health endpoint at `/api/health`
+- Centralized application error, response, validation, environment, and logging foundations
+
+The following are not production capabilities yet:
+
+- Secure authentication and role enforcement
+- Backend persistence and database storage
+- Real emergency contact or authority notification
+- Real-time location streaming or geofencing
+- Incident reporting and evidence workflows
+- AI/ML risk intelligence
+- Provider-backed chatbot responses
+- Production notification delivery
+- A real blockchain or immutable audit ledger
+
+Prototype data is currently held in browser `localStorage`. It must not be treated as secure storage or production authentication.
 
 ## Technology Stack
 
-- **Frontend**: Next.js 16 with React 19
-- **Styling**: Tailwind CSS v4 with custom animations
-- **UI Components**: shadcn/ui with Radix UI
-- **Form Handling**: React Hook Form + Zod for validation
-- **Data Visualization**: Recharts
-- **State Management**: React hooks with session management
-- **Authentication**: Custom auth service with role-based access
-- **Notifications**: Sonner for toast notifications
+- Next.js 14.2.25
+- React 19
+- TypeScript
+- Tailwind CSS v4
+- Radix UI and reusable shadcn-style components
+- Lucide icons
+- React Hook Form and Zod are available for future validation work
+- npm is the preferred package manager for this repository
 
-## Project Structure
+## Application Structure
 
-```
-├── app/
-│   ├── page.tsx              # Main entry point with auth routing
-│   ├── layout.tsx            # Root layout
-│   └── globals.css           # Global styles
-├── components/
-│   ├── auth/                 # Authentication components
-│   │   └── login-form.tsx    # Login/signup form
-│   ├── emergency/            # Emergency features
-│   │   ├── sos-button.tsx    # Emergency SOS button
-│   │   ├── custom-sos.tsx    # Custom SOS interface
-│   │   └── blockchain-tracker.tsx
-│   ├── home-page.tsx         # User home page
-│   ├── dashboard/
-│   │   └── safety-overview.tsx
-│   ├── admin/
-│   │   └── admin-dashboard.tsx
-│   ├── contacts/
-│   │   └── emergency-contacts.tsx
-│   ├── location/
-│   │   ├── interactive-map.tsx
-│   │   └── location-tracker.tsx
-│   ├── call/
-│   │   └── call-interface.tsx
-│   ├── support/
-│   │   └── chatbot.tsx
-│   └── ui/                   # Reusable UI components
-├── lib/
-│   ├── auth.ts               # Authentication service
-│   ├── emergency.ts          # Emergency services logic
-│   ├── blockchain.ts         # Blockchain integration
-│   ├── location.ts           # Location services
-│   └── utils.ts              # Utility functions
-├── hooks/
-│   ├── use-mobile.ts         # Mobile detection hook
-│   └── use-toast.ts          # Toast notification hook
-└── public/                   # Static assets
+```text
+app/
+  page.tsx                    Existing prototype entry flow
+  layout.tsx                  SafeVoyage metadata and root layout
+  api/health/route.ts         Server-side health endpoint
+  (auth)/                     Authentication route shells
+  (tourist)/tourist/          Tourist route shells
+  (authority)/authority/      Authority route shells
+  error.tsx                   Application error boundary
+  not-found.tsx               Not-found boundary
+components/
+  ui/                         Reusable design-system components
+  foundation/                 Foundation-only route presentation
+  auth/                       Existing authentication UI prototype
+  dashboard/                  Existing safety dashboard prototype
+  emergency/                  Existing SOS and emergency UI prototypes
+  location/                   Existing GPS and map UI prototypes
+  contacts/                   Existing emergency contacts UI prototype
+  support/                    Existing chatbot UI prototype
+  admin/                      Existing administrator UI prototype
+lib/
+  api/                        API response helpers
+  config/                     Environment and public configuration
+  errors/                     Application error model and handlers
+  logging/                    Structured logging abstraction
+  auth.ts                     Existing local prototype auth service
+  emergency.ts                Existing local prototype emergency service
+  location.ts                 Existing browser location service
 ```
 
 ## Getting Started
 
-### Prerequisites
-- Node.js 18+ 
-- npm, yarn, pnpm, or bun
+Prerequisites:
 
-### Installation
+- Node.js 18 or newer
+- npm
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd tourist-safety-website
-   ```
-
-2. **Install dependencies**
-   ```bash
-   pnpm install
-   # or
-   npm install
-   ```
-
-3. **Run the development server**
-   ```bash
-   pnpm dev
-   # or
-   npm run dev
-   ```
-
-4. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-### Build for Production
+Install dependencies from the application directory:
 
 ```bash
-pnpm build
-pnpm start
+cd touristsafetywebsite
+npm install
 ```
 
-## Authentication
-
-The application uses a custom authentication service with support for two roles:
-
-- **User**: Regular tourist with access to safety features
-- **Administrator**: Admin dashboard with full management capabilities
-
-### Default Test Credentials
-Users can sign up or test with the provided authentication form. The system includes session management with automatic refresh every 5 minutes.
-
-## Key Features Explained
-
-### Emergency SOS Button
-One-tap emergency activation that:
-- Alerts emergency contacts
-- Shares real-time location
-- Initiates emergency calling
-- Logs incident to blockchain
-
-### Location Tracking
-- Real-time GPS location sharing
-- Integration with interactive maps
-- Safe zone identification
-- Historical location tracking
-
-### Safety Overview
-Dashboard displaying:
-- Current threat level
-- Nearby incidents
-- Emergency contact status
-- Quick access to safety resources
-
-### Admin Dashboard
-Administrators can:
-- View all incidents and reports
-- Manage user accounts
-- Monitor location data
-- Access blockchain incident logs
-- Generate safety reports and analytics
-
-## Styling & Customization
-
-The project uses Tailwind CSS v4 with custom design tokens configured in `globals.css`. Colors and spacing follow a semantic design system that can be customized in the CSS variables.
-
-### Theme Variables
-Customize these in `globals.css`:
-- `--background`: Primary background color
-- `--foreground`: Primary text color
-- `--primary`: Brand color
-- `--secondary`: Secondary color
-- `--muted`: Muted text/background
-- `--radius`: Border radius size
-
-## API Integration
-
-The application integrates with several services:
-- **Location Services**: Geolocation API for GPS tracking
-- **Emergency Services**: Integration with local emergency numbers
-- **Blockchain**: Immutable incident logging
-- **AI Chatbot**: Real-time support responses
-
-## Performance Optimizations
-
-- **Next.js 16**: Server-side rendering and static generation
-- **Code Splitting**: Automatic route-based code splitting
-- **Image Optimization**: Automatic image optimization
-- **CSS-in-JS**: Tailwind CSS for minimal bundle size
-
-## Security
-
-- **Session Management**: HTTP-only cookies with automatic expiration
-- **Role-Based Access Control**: User and admin level permissions
-- **Input Validation**: Zod schema validation
-- **XSS Protection**: Built-in React sanitization
-- **CSRF Protection**: Next.js built-in CSRF handling
-
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-- Mobile browsers (iOS Safari, Chrome Mobile)
-
-## Deployment
-
-### Deploy to Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Deploy with one click
+Copy the environment contract and add only configuration appropriate to your local setup:
 
 ```bash
-vercel deploy
+copy .env.example .env.local
 ```
 
-### Deploy to Other Platforms
+Run the development server:
 
-The application can be deployed to any platform supporting Node.js 18+:
-- AWS
-- Google Cloud
-- Azure
-- Heroku
-- Docker containers
+```bash
+npm run dev
+```
 
-## Troubleshooting
+Open [http://localhost:3000](http://localhost:3000).
 
-### Development Server Issues
-- Clear `.next` folder: `rm -rf .next`
-- Reinstall dependencies: `pnpm install`
-- Check port 3000 is available
+## Environment Configuration
 
-### Build Errors
-- Ensure all TypeScript types are correct
-- Check for missing imports
-- Verify environment variables are set
+`.env.example` documents the current public application settings and future server-only integrations. Do not commit `.env` or `.env.local`.
 
-## Contributing
+`NEXT_PUBLIC_MAPS_API_KEY` is intentionally browser-visible when used. Any real map key must be restricted by domain and API, and any previously exposed key should be rotated or restricted by the project owner.
 
-We welcome contributions! Please follow these steps:
+Server-only values such as `DATABASE_URL`, `AUTH_SECRET`, provider credentials, and future AI credentials must never use the `NEXT_PUBLIC_` prefix.
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+## Validation
 
-## License
+Run the available checks from `touristsafetywebsite/`:
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+```bash
+npm run typecheck
+npm run build
+npm run lint
+```
 
-## Support
+The build is configured to fail on TypeScript errors. The existing dependency set does not currently include a project-level ESLint installation; lint setup remains a small foundation task before CI enforcement.
 
-For support, please:
-- Open an issue on GitHub
-- Contact the development team
-- Check documentation at [project-docs-url]
+## API Foundation
+
+`GET /api/health` returns a server-generated response in this shape:
+
+```json
+{
+  "status": "ok",
+  "service": "safevoyage",
+  "timestamp": "2026-09-04T00:00:00.000Z"
+}
+```
+
+Future route handlers should use the shared API response and error foundations rather than exposing stack traces or internal details.
 
 ## Roadmap
 
-- [ ] Push notifications for safety alerts
-- [ ] Video calling integration
-- [ ] Multi-language support
-- [ ] Offline functionality
-- [ ] Machine learning-based threat detection
-- [ ] Integration with wearable devices
-- [ ] Community safety ratings
+1. Foundation and architecture
+2. Secure authentication and user roles
+3. Tourist profiles and persistent dashboards
+4. Real-time location and geofencing
+5. SOS and emergency response coordination
+6. Incident reporting
+7. Authority and responder operations
+8. Risk intelligence and controlled AI assistance
+9. Notifications and delivery tracking
+10. Security, testing, observability, and deployment
 
-## Acknowledgments
+## Phase 1 Technical Debt
 
-- Built with [Next.js](https://nextjs.org/)
-- UI components from [shadcn/ui](https://ui.shadcn.com/)
-- Icons from [Lucide React](https://lucide.dev/)
-- Data visualization with [Recharts](https://recharts.org/)
+The following items are intentionally deferred:
 
----
+- LocalStorage replacement with server persistence
+- Secure authentication and authorization
+- Consolidation of duplicate browser location watchers
+- Replacement of mock authority data
+- Provider-backed emergency and notification delivery
+- Database and migration tooling
+- Production map-provider integration
+- AI service integration
+- Test runner and end-to-end test setup
+- Real append-only audit logging
 
-**Last Updated**: April 2026
-
-For more information and latest updates, visit the project repository.
+Do not interpret prototype labels or UI demonstrations as evidence that emergency services, authorities, contacts, or AI systems have been contacted.

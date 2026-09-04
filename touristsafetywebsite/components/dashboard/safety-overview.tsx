@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Progress } from "@/components/ui/progress"
 import { Shield, MapPin, Users, AlertTriangle, Clock, CheckCircle, Activity } from "lucide-react"
-import { LocationService, type LocationData } from "@/lib/location"
+import { LocationService, type LocationData, type SafetyZoneInfo } from "@/lib/location"
 import { EmergencyService, type SOSAlert } from "@/lib/emergency"
 
 interface SafetyOverviewProps {
@@ -15,7 +15,7 @@ interface SafetyOverviewProps {
 
 export function SafetyOverview({ userId }: SafetyOverviewProps) {
   const [location, setLocation] = useState<LocationData | null>(null)
-  const [safetyStatus, setSafetyStatus] = useState<{ isSafe: boolean; message: string } | null>(null)
+  const [safetyStatus, setSafetyStatus] = useState<SafetyZoneInfo | null>(null)
   const [isTracking, setIsTracking] = useState(false)
   const [recentAlerts, setRecentAlerts] = useState<SOSAlert[]>([])
   const [contactsCount, setContactsCount] = useState(0)
@@ -86,7 +86,7 @@ export function SafetyOverview({ userId }: SafetyOverviewProps) {
     if (contactCount >= 3) score += 10
 
     // Safety zone (30 points)
-    if (currentLocation && safetyStatus?.isSafe) score += 30
+    if (currentLocation && safetyStatus?.zone === "green") score += 30
     else if (currentLocation) score += 15 // At least we have location
 
     setSafetyScore(Math.min(score, 100))
@@ -142,8 +142,8 @@ export function SafetyOverview({ userId }: SafetyOverviewProps) {
               </div>
               <div className="text-center">
                 <div className="font-medium">Zone Status</div>
-                <div className={`text-xs ${safetyStatus?.isSafe ? "text-green-600" : "text-yellow-600"}`}>
-                  {safetyStatus?.isSafe ? "Safe" : "Caution"}
+                <div className={`text-xs ${safetyStatus?.zone === "green" ? "text-green-600" : "text-yellow-600"}`}>
+                  {safetyStatus?.zone === "green" ? "Safe" : "Caution"}
                 </div>
               </div>
             </div>
@@ -174,7 +174,7 @@ export function SafetyOverview({ userId }: SafetyOverviewProps) {
                 </div>
                 {safetyStatus && (
                   <Alert
-                    className={`py-2 ${safetyStatus.isSafe ? "border-green-200 bg-green-50" : "border-yellow-200 bg-yellow-50"}`}
+                    className={`py-2 ${safetyStatus.zone === "green" ? "border-green-200 bg-green-50" : "border-yellow-200 bg-yellow-50"}`}
                   >
                     <AlertDescription className="text-xs">{safetyStatus.message}</AlertDescription>
                   </Alert>
@@ -226,7 +226,7 @@ export function SafetyOverview({ userId }: SafetyOverviewProps) {
                   Operational
                 </Badge>
               </div>
-              <div className="text-xs text-muted-foreground">SafeTour AI monitoring active</div>
+              <div className="text-xs text-muted-foreground">SafeVoyage prototype monitoring active</div>
             </div>
           </CardContent>
         </Card>
