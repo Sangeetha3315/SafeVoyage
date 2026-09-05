@@ -4,7 +4,7 @@ export interface User {
   id: string
   name: string
   email: string
-  role: "user" | "administrator"
+  role: "tourist" | "authority"
   createdAt: Date
 }
 
@@ -13,16 +13,35 @@ export interface AuthState {
   isAuthenticated: boolean
 }
 
+type StoredUser = Omit<User, "role"> & { role: "user" | "administrator" | User["role"] }
+
 // Simple localStorage-based auth (in production, use proper backend)
 export class AuthService {
   private static readonly USERS_KEY = "safetour_users"
   private static readonly CURRENT_USER_KEY = "safetour_current_user"
   private static readonly SESSION_TIMEOUT = 24 * 60 * 60 * 1000 // 24 hours
+  private static readonly DEMO_ACCOUNTS = {
+    tourist: {
+      email: "tourist@demo.safevoyage.app",
+      name: "Demo Tourist",
+      passwordHash: "23be0a005e66361983652afbb68715f05e3463353324c3d25bbe9a9015ee2dbd",
+    },
+    authority: {
+      email: "authority@demo.safevoyage.app",
+      name: "Demo Authority",
+      passwordHash: "7d190977a2ed0ca541871c88cf443f4489974c1aa588c986fc619d58d87f3ec7",
+    },
+  } as const
 
   static getUsers(): User[] {
     if (typeof window === "undefined") return []
     const users = localStorage.getItem(this.USERS_KEY)
-    return users ? JSON.parse(users) : []
+    return users
+      ? (JSON.parse(users) as StoredUser[]).map((user) => ({
+          ...user,
+          role: user.role === "administrator" ? "authority" : user.role === "user" ? "tourist" : user.role,
+        }))
+      : []
   }
 
   static saveUsers(users: User[]): void {
@@ -62,12 +81,7 @@ export class AuthService {
     }
   }
 
-  static signUp(
-    email: string,
-    password: string,
-    name: string,
-    role: "user" | "administrator",
-  ): { success: boolean; user?: User; error?: string } {
+  static signUp(email: string, password: string, name: string, role: User["role"]): { success: boolean; user?: User; error?: string } {
     const users = this.getUsers()
 
     // Check if user already exists
@@ -94,18 +108,32 @@ export class AuthService {
   static signIn(
     email: string,
     password: string,
-    role: "user" | "administrator",
-  ): { success: boolean; user?: User; error?: string } {
-    const users = this.getUsers()
-    const user = users.find((u) => u.email === email && u.role === role)
+    role: User["role"],
+  ): Promise<{ success: boolean; user?: User; error?: string }> {
+    return this.verifyDemoCredentials(email, password, role).then((isValid) => {
+      if (!isValid) return { success: false, error: "Use one of the documented demo accounts and passwords." }
 
-    if (!user) {
-      return { success: false, error: "User not found or incorrect role selected" }
-    }
+      const account = this.DEMO_ACCOUNTS[role]
+      const user: User = {
+        id: `demo-${role}`,
+        name: account.name,
+        email: account.email,
+        role,
+        createdAt: new Date("2026-01-01T00:00:00.000Z"),
+      }
+      this.setCurrentUser(user)
+      return { success: true, user }
+    })
+  }
 
-    // In production, verify password hash
-    this.setCurrentUser(user)
-    return { success: true, user }
+  private static async verifyDemoCredentials(email: string, password: string, role: User["role"]): Promise<boolean> {
+    if (typeof window === "undefined") return false
+
+    const account = this.DEMO_ACCOUNTS[role]
+    const encodedPassword = new TextEncoder().encode(password)
+    const digest = await crypto.subtle.digest("SHA-256", encodedPassword)
+    const passwordHash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("")
+    return email.trim().toLowerCase() === account.email && passwordHash === account.passwordHash
   }
 
   static signOut(): void {

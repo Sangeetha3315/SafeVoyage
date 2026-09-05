@@ -10,27 +10,30 @@ import { Label } from "@/components/ui/label"
 import { Shield, Eye, EyeOff, User, UserCog } from "lucide-react"
 
 interface LoginFormProps {
-  onLogin: (email: string, password: string, role: "user" | "administrator") => void
-  onSignUp: (email: string, password: string, name: string, role: "user" | "administrator") => void
+  onLogin: (email: string, password: string, role: "tourist" | "authority") => void | Promise<void>
 }
 
-export function LoginForm({ onLogin, onSignUp }: LoginFormProps) {
-  const [isSignUp, setIsSignUp] = useState(false)
+export function LoginForm({ onLogin }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false)
-  const [selectedRole, setSelectedRole] = useState<"user" | "administrator">("user")
+  const [selectedRole, setSelectedRole] = useState<"tourist" | "authority">("tourist")
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
   })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (isSignUp) {
-      onSignUp(formData.email, formData.password, formData.name, selectedRole)
-    } else {
-      onLogin(formData.email, formData.password, selectedRole)
-    }
+    setIsSubmitting(true)
+    Promise.resolve(onLogin(formData.email, formData.password, selectedRole)).finally(() => setIsSubmitting(false))
+  }
+
+  const fillDemoAccount = (role: "tourist" | "authority") => {
+    setSelectedRole(role)
+    setFormData({
+      email: role === "tourist" ? "tourist@demo.safevoyage.app" : "authority@demo.safevoyage.app",
+      password: role === "tourist" ? "demo-tourist-2026" : "demo-authority-2026",
+    })
   }
 
   return (
@@ -41,10 +44,8 @@ export function LoginForm({ onLogin, onSignUp }: LoginFormProps) {
             <Shield className="h-8 w-8 text-primary" />
             <span className="text-2xl font-bold">SafeVoyage</span>
           </div>
-          <CardTitle>{isSignUp ? "Create Account" : "Welcome Back"}</CardTitle>
-          <CardDescription>
-            {isSignUp ? "Join SafeVoyage for safer travel" : "Sign in to access your safety dashboard"}
-          </CardDescription>
+          <CardTitle>Welcome to SafeVoyage</CardTitle>
+          <CardDescription>Demo access for tourist safety and authority response workflows</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -53,38 +54,24 @@ export function LoginForm({ onLogin, onSignUp }: LoginFormProps) {
               <div className="grid grid-cols-2 gap-3">
                 <Button
                   type="button"
-                  variant={selectedRole === "user" ? "default" : "outline"}
+                  variant={selectedRole === "tourist" ? "default" : "outline"}
                   className="h-16 flex-col space-y-2"
-                  onClick={() => setSelectedRole("user")}
+                  onClick={() => setSelectedRole("tourist")}
                 >
                   <User className="h-5 w-5" />
                   <span className="text-xs">Tourist</span>
                 </Button>
                 <Button
                   type="button"
-                  variant={selectedRole === "administrator" ? "default" : "outline"}
+                  variant={selectedRole === "authority" ? "default" : "outline"}
                   className="h-16 flex-col space-y-2"
-                  onClick={() => setSelectedRole("administrator")}
+                  onClick={() => setSelectedRole("authority")}
                 >
                   <UserCog className="h-5 w-5" />
                   <span className="text-xs">Administrator</span>
                 </Button>
               </div>
             </div>
-
-            {isSignUp && (
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Enter your full name"
-                  value={formData.name}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                  required
-                />
-              </div>
-            )}
 
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -121,16 +108,20 @@ export function LoginForm({ onLogin, onSignUp }: LoginFormProps) {
               </div>
             </div>
 
-            <Button type="submit" className="w-full">
-              {isSignUp ? "Create Account" : "Sign In"}
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Signing in..." : "Sign In to Demo"}
             </Button>
           </form>
 
-          <div className="mt-4 text-center">
-            <Button variant="link" onClick={() => setIsSignUp(!isSignUp)} className="text-sm">
-              {isSignUp ? "Already have an account? Sign in" : "Don't have an account? Sign up"}
+          <div className="mt-6 grid grid-cols-2 gap-3 border-t pt-4">
+            <Button type="button" variant="outline" className="text-xs" onClick={() => fillDemoAccount("tourist")}>
+              Use Tourist Demo
+            </Button>
+            <Button type="button" variant="outline" className="text-xs" onClick={() => fillDemoAccount("authority")}>
+              Use Authority Demo
             </Button>
           </div>
+          <p className="mt-3 text-center text-xs text-muted-foreground">Demo only. No sensitive credentials are stored.</p>
         </CardContent>
       </Card>
     </div>

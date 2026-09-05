@@ -1,5 +1,5 @@
-import { PhasePlaceholder } from "@/components/foundation/phase-placeholder"
+import { DemoLoginPage } from "@/components/auth/demo-login-page"
 
 export default function LoginPage() {
-  return <PhasePlaceholder title="SafeVoyage sign in" description="Secure authentication is planned for Phase 2." />
+  return <DemoLoginPage />
 }

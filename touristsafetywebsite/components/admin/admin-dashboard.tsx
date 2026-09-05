@@ -48,7 +48,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
 
   const loadAdminData = () => {
     // Load all users
-    const users = AuthService.getUsers().filter((u) => u.role === "user")
+    const users = AuthService.getUsers().filter((u) => u.role === "tourist")
     setAllUsers(users)
 
     // Load mock location data
@@ -88,7 +88,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
     const users = AuthService.getUsers()
     const updatedUsers = users.map((u) => (u.id === editedUser.id ? editedUser : u))
     AuthService.saveUsers(updatedUsers)
-    setAllUsers(updatedUsers.filter((u) => u.role === "user"))
+    setAllUsers(updatedUsers.filter((u) => u.role === "tourist"))
     setEditingUser(null)
   }
 
@@ -97,7 +97,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
       const users = AuthService.getUsers()
       const updatedUsers = users.filter((u) => u.id !== userId)
       AuthService.saveUsers(updatedUsers)
-      setAllUsers(updatedUsers.filter((u) => u.role === "user"))
+      setAllUsers(updatedUsers.filter((u) => u.role === "tourist"))
     }
   }
 

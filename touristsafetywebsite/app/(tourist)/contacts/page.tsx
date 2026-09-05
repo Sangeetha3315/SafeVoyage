@@ -1,5 +1,6 @@
-import { PhasePlaceholder } from "@/components/foundation/phase-placeholder"
+import { DemoRoute } from "@/components/auth/demo-route"
+import { EmergencyContacts } from "@/components/contacts/emergency-contacts"
 
 export default function TouristContactsPage() {
-  return <PhasePlaceholder title="Emergency contacts" description="Server-backed emergency contacts are planned for a future SafeVoyage phase." />
+  return <DemoRoute allowedRole="tourist"><EmergencyContacts /></DemoRoute>
 }

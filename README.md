@@ -33,6 +33,17 @@ The following are not production capabilities yet:
 
 Prototype data is currently held in browser `localStorage`. It must not be treated as secure storage or production authentication.
 
+### Demo accounts
+
+The current demo authentication flow accepts these accounts and redirects each role to its dashboard:
+
+| Role | Email | Password |
+| --- | --- | --- |
+| Tourist | `tourist@demo.safevoyage.app` | `demo-tourist-2026` |
+| Authority | `authority@demo.safevoyage.app` | `demo-authority-2026` |
+
+These credentials are for the browser demo only. Passwords are checked against SHA-256 digests and are never stored in the session; this is not production authentication.
+
 ## Technology Stack
 
 - Next.js 14.2.25

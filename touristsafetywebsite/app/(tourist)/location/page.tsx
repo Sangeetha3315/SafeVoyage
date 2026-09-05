@@ -1,5 +1,6 @@
-import { PhasePlaceholder } from "@/components/foundation/phase-placeholder"
+import { DemoRoute } from "@/components/auth/demo-route"
+import { LocationTracker } from "@/components/location/location-tracker"
 
 export default function TouristLocationPage() {
-  return <PhasePlaceholder title="Location safety" description="Consent-driven location sharing and geofencing are planned for a future SafeVoyage phase." />
+  return <DemoRoute allowedRole="tourist"><LocationTracker /></DemoRoute>
 }

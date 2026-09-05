@@ -1,5 +1,6 @@
-import { PhasePlaceholder } from "@/components/foundation/phase-placeholder"
+import { DemoRoute } from "@/components/auth/demo-route"
+import { AuthorityDashboardView } from "@/components/auth/demo-views"
 
 export default function AuthorityDashboardPage() {
-  return <PhasePlaceholder title="Authority dashboard" description="The existing administrative prototype remains available through the home route. Secure authority operations are planned for a future phase." />
+  return <DemoRoute allowedRole="authority"><AuthorityDashboardView /></DemoRoute>
 }

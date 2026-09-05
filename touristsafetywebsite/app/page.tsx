@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { LoginForm } from "@/components/auth/login-form"
 import { AuthService, type User } from "@/lib/auth"
 import HomePage from "@/components/home-page"
-import AdminDashboard from "@/components/admin/admin-dashboard"
+import { useRouter } from "next/navigation"
+import { DemoLoginPage } from "@/components/auth/demo-login-page"
 
 export default function Page() {
+  const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -33,24 +34,6 @@ export default function Page() {
     }
   }, [])
 
-  const handleLogin = (email: string, password: string, role: "user" | "administrator") => {
-    const result = AuthService.signIn(email, password, role)
-    if (result.success && result.user) {
-      setUser(result.user)
-    } else {
-      alert(result.error || "Login failed")
-    }
-  }
-
-  const handleSignUp = (email: string, password: string, name: string, role: "user" | "administrator") => {
-    const result = AuthService.signUp(email, password, name, role)
-    if (result.success && result.user) {
-      setUser(result.user)
-    } else {
-      alert(result.error || "Sign up failed")
-    }
-  }
-
   const handleLogout = () => {
     AuthService.signOut()
     setUser(null)
@@ -66,11 +49,12 @@ export default function Page() {
 
   // Show login form if not authenticated
   if (!user) {
-    return <LoginForm onLogin={handleLogin} onSignUp={handleSignUp} />
+    return <DemoLoginPage />
   }
 
-  if (user.role === "administrator") {
-    return <AdminDashboard user={user} onLogout={handleLogout} />
+  if (user.role === "authority") {
+    router.replace("/authority/dashboard")
+    return null
   }
 
   // Show main app if authenticated as user

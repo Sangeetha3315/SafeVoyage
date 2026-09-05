@@ -1,5 +1,8 @@
-import { PhasePlaceholder } from "@/components/foundation/phase-placeholder"
+import { DemoRoute } from "@/components/auth/demo-route"
+import { TouristEmergencyView } from "@/components/auth/demo-views"
 
 export default function TouristEmergencyPage() {
-  return <PhasePlaceholder title="Emergency response" description="The existing SOS prototype remains available at the home route. Provider-backed emergency coordination is planned for a future phase." />
+  return (
+    <DemoRoute allowedRole="tourist"><TouristEmergencyView /></DemoRoute>
+  )
 }

@@ -1,5 +1,8 @@
-import { PhasePlaceholder } from "@/components/foundation/phase-placeholder"
+import { DemoRoute } from "@/components/auth/demo-route"
+import { TouristDashboardView } from "@/components/auth/demo-views"
 
 export default function TouristDashboardPage() {
-  return <PhasePlaceholder title="Tourist dashboard" description="The existing dashboard prototype remains available at the home route. Server-backed dashboard data is planned for a future phase." />
+  return (
+    <DemoRoute allowedRole="tourist"><TouristDashboardView /></DemoRoute>
+  )
 }
