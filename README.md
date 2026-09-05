@@ -162,19 +162,3 @@ Future route handlers should use the shared API response and error foundations r
 9. Notifications and delivery tracking
 10. Security, testing, observability, and deployment
 
-## Phase 1 Technical Debt
-
-The following items are intentionally deferred:
-
-- LocalStorage replacement with server persistence
-- Secure authentication and authorization
-- Consolidation of duplicate browser location watchers
-- Replacement of mock authority data
-- Provider-backed emergency and notification delivery
-- Database and migration tooling
-- Production map-provider integration
-- AI service integration
-- Test runner and end-to-end test setup
-- Real append-only audit logging
-
-Do not interpret prototype labels or UI demonstrations as evidence that emergency services, authorities, contacts, or AI systems have been contacted.
