@@ -3,11 +3,10 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { AuthService, type User } from "@/lib/auth"
-import AdminDashboard from "@/components/admin/admin-dashboard"
 import { SOSButton } from "@/components/emergency/sos-button"
-import { CustomSOS } from "@/components/emergency/custom-sos"
 import { InteractiveMap } from "@/components/location/interactive-map"
 import { EmergencyService, type EmergencyContact } from "@/lib/emergency"
+import { DemoResponseService, DEMO_RESPONDERS, type DemoIncident, type DemoSosAlert } from "@/lib/demo-response"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -58,7 +57,7 @@ export function TouristDashboardView() {
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><Button asChild className="h-14 justify-start gap-3"><Link href="/tourist/incidents"><FileWarning className="h-5 w-5" /><span><span className="block text-sm">Report incident</span><span className="block text-xs font-normal opacity-75">Document a concern</span></span></Link></Button><Button asChild variant="destructive" className="h-14 justify-start gap-3"><Link href="/emergency"><Siren className="h-5 w-5" /><span><span className="block text-sm">Emergency SOS</span><span className="block text-xs font-normal opacity-90">Start demo workflow</span></span></Link></Button><Button asChild variant="outline" className="h-14 justify-start gap-3"><Link href="/location"><Compass className="h-5 w-5" /><span><span className="block text-sm">View safety map</span><span className="block text-xs font-normal text-muted-foreground">Check your area</span></span></Link></Button><Button asChild variant="outline" className="h-14 justify-start gap-3"><Link href="/contacts"><Phone className="h-5 w-5" /><span><span className="block text-sm">Emergency contacts</span><span className="block text-xs font-normal text-muted-foreground">Manage trusted people</span></span></Link></Button></section>
 
-      <Card className="border-rose-200 bg-rose-50/70"><CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between"><div className="flex gap-3"><div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-700"><Siren className="h-5 w-5" /></div><div><p className="font-semibold text-rose-950">Need immediate help?</p><p className="mt-1 text-sm text-rose-800">The demo SOS creates a local alert and prepares your selected contacts. It does not contact emergency services.</p></div></div><div className="shrink-0"><SOSButton userId={user.id} /></div></CardContent></Card>
+      <Card className="border-rose-200 bg-rose-50/70"><CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between"><div className="flex gap-3"><div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-700"><Siren className="h-5 w-5" /></div><div><p className="font-semibold text-rose-950">Need immediate help?</p><p className="mt-1 text-sm text-rose-800">The demo SOS creates a local alert and prepares your selected contacts. It does not contact emergency services.</p></div></div><div className="shrink-0"><SOSButton userId={user.id} touristName={user.name} /></div></CardContent></Card>
     </div>
   )
 }
@@ -66,7 +65,45 @@ export function TouristDashboardView() {
 export function AuthorityDashboardView() {
   const user = useDemoUser()
   if (!user) return null
-  return <AdminDashboard user={user} onLogout={() => AuthService.signOut()} />
+  return <DemoAuthorityResponsePanel />
+}
+
+function DemoAuthorityResponsePanel() {
+  const [alerts, setAlerts] = useState<DemoSosAlert[]>([])
+  const [incidents, setIncidents] = useState<DemoIncident[]>([])
+  const [selectedResponder, setSelectedResponder] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    const refresh = () => {
+      setAlerts(DemoResponseService.getSosAlerts())
+      setIncidents(DemoResponseService.getIncidents())
+    }
+    refresh()
+    window.addEventListener("storage", refresh)
+    return () => window.removeEventListener("storage", refresh)
+  }, [])
+
+  const updateAlert = (id: string, action: "acknowledge" | "assign" | "resolve") => {
+    if (action === "acknowledge") DemoResponseService.updateSosStatus(id, "ACKNOWLEDGED")
+    if (action === "resolve") DemoResponseService.updateSosStatus(id, "RESOLVED")
+    if (action === "assign") {
+      const responder = DEMO_RESPONDERS.find((item) => item.id === selectedResponder[id])
+      if (responder) DemoResponseService.assignResponder(id, responder)
+      else return
+    }
+    setAlerts(DemoResponseService.getSosAlerts())
+  }
+
+  const updateIncident = (id: string, status: DemoIncident["status"]) => {
+    DemoResponseService.updateIncidentStatus(id, status)
+    setIncidents(DemoResponseService.getIncidents())
+  }
+
+  return <section className="container mx-auto space-y-6 px-4 pt-6">
+    <div className="flex items-end justify-between gap-3"><div><Badge variant="destructive" className="mb-2">DEMO RESPONSE CENTER</Badge><h2 className="text-2xl font-bold">Emergency alerts</h2><p className="text-sm text-muted-foreground">Shared demo events from the tourist workflow. No external notifications are sent.</p></div><Badge variant="outline">{alerts.filter((alert) => alert.status !== "RESOLVED").length} active</Badge></div>
+    <Card className="border-rose-200"><CardHeader><CardTitle className="flex items-center gap-2"><Siren className="h-5 w-5 text-rose-600" /> High-priority SOS alerts</CardTitle><CardDescription>Acknowledge, assign a demo responder, then resolve.</CardDescription></CardHeader><CardContent className="space-y-4">{alerts.length === 0 ? <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">No SOS alerts yet. Trigger the tourist demo SOS to see it appear here.</div> : alerts.map((alert) => <div key={alert.id} className="rounded-xl border border-rose-200 bg-rose-50/60 p-4"><div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between"><div className="space-y-2"><div className="flex flex-wrap items-center gap-2"><Badge variant="destructive">{alert.severity}</Badge><Badge variant="outline">{alert.status.replace("_", " ")}</Badge></div><p className="font-semibold">{alert.touristName}</p><p className="flex items-center gap-1 text-sm text-muted-foreground"><MapPin className="h-4 w-4" />{alert.location.address ?? `${alert.location.latitude.toFixed(4)}, ${alert.location.longitude.toFixed(4)}`}</p><p className="text-xs text-muted-foreground">{new Date(alert.timestamp).toLocaleString()}</p>{alert.responderName && <p className="text-sm font-medium text-emerald-700">Responder assigned: {alert.responderName}</p>}</div><div className="flex flex-wrap gap-2 lg:max-w-md lg:justify-end">{alert.status === "ACTIVE" && <Button size="sm" onClick={() => updateAlert(alert.id, "acknowledge")}>Acknowledge</Button>}{(alert.status === "ACKNOWLEDGED" || alert.status === "ACTIVE") && <><select aria-label="Select responder" className="h-9 rounded-md border bg-background px-2 text-sm" value={selectedResponder[alert.id] ?? ""} onChange={(event) => setSelectedResponder((current) => ({ ...current, [alert.id]: event.target.value }))}><option value="">Select responder</option>{DEMO_RESPONDERS.map((responder) => <option key={responder.id} value={responder.id}>{responder.name} · {responder.eta}</option>)}</select><Button size="sm" variant="outline" onClick={() => updateAlert(alert.id, "assign")}>Assign responder</Button></>}{alert.status !== "RESOLVED" && <Button size="sm" variant="outline" onClick={() => updateAlert(alert.id, "resolve")}>Resolve</Button>}</div></div></div>)}</CardContent></Card>
+    <Card><CardHeader><CardTitle>Demo incident reports</CardTitle><CardDescription>Tourist-submitted reports moving through review.</CardDescription></CardHeader><CardContent className="space-y-3">{incidents.length === 0 ? <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">No incident reports yet.</div> : incidents.map((incident) => <div key={incident.id} className="flex flex-col gap-3 rounded-lg border p-4 lg:flex-row lg:items-center lg:justify-between"><div><div className="flex flex-wrap items-center gap-2"><p className="font-semibold">{incident.title}</p><Badge variant="outline">{incident.severity}</Badge><Badge variant="secondary">{incident.status}</Badge></div><p className="mt-1 text-sm text-muted-foreground">{incident.category} · {incident.location} · {incident.touristName}</p></div><div className="flex gap-2">{incident.status === "REPORTED" && <Button size="sm" onClick={() => updateIncident(incident.id, "REVIEWING")}>Start review</Button>}{incident.status === "REVIEWING" && <Button size="sm" variant="outline" onClick={() => updateIncident(incident.id, "RESOLVED")}>Resolve</Button>}</div></div>)}</CardContent></Card>
+  </section>
 }
 
 export function TouristEmergencyView() {
@@ -79,8 +116,7 @@ export function TouristEmergencyView() {
         <h1 className="text-3xl font-bold">Emergency / SOS</h1>
         <p className="mt-2 text-muted-foreground">Demo controls for preparing and sending an emergency request.</p>
       </div>
-      <SOSButton userId={user.id} />
-      <CustomSOS userId={user.id} />
+      <SOSButton userId={user.id} touristName={user.name} />
     </div>
   )
 }

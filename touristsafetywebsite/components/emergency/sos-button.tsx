@@ -1,220 +1,70 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { AlertTriangle, CheckCircle2, Clock3, MapPin, ShieldAlert } from "lucide-react"
+import { DemoResponseService, type DemoSosAlert } from "@/lib/demo-response"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { AlertTriangle, Phone, MapPin, Clock, CheckCircle, X, Copy } from "lucide-react"
-import { EmergencyService, type SOSAlert } from "@/lib/emergency"
-import { CallInterface } from "@/components/call/call-interface"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface SOSButtonProps {
   userId: string
+  touristName?: string
 }
 
-export function SOSButton({ userId }: SOSButtonProps) {
-  const [isLoading, setIsLoading] = useState(false)
-  const [lastAlert, setLastAlert] = useState<SOSAlert | null>(null)
+export function SOSButton({ userId, touristName = "Demo Tourist" }: SOSButtonProps) {
   const [showConfirmation, setShowConfirmation] = useState(false)
-  const [showCallInterface, setShowCallInterface] = useState(false)
-  const [blockchainIdCopied, setBlockchainIdCopied] = useState(false)
-  const [callDetails, setCallDetails] = useState<{
-    phoneNumber: string
-    contactName?: string
-    contactType: "emergency" | "personal"
-  } | null>(null)
+  const [activeAlert, setActiveAlert] = useState<DemoSosAlert | null>(null)
+  const [isCreating, setIsCreating] = useState(false)
 
-  const copyBlockchainId = async (blockchainId: string) => {
-    try {
-      await navigator.clipboard.writeText(blockchainId)
-      setBlockchainIdCopied(true)
-      setTimeout(() => setBlockchainIdCopied(false), 3000)
-    } catch (err) {
-      console.error("Failed to copy blockchain ID:", err)
-      // Fallback for older browsers
-      const textArea = document.createElement("textarea")
-      textArea.value = blockchainId
-      document.body.appendChild(textArea)
-      textArea.select()
-      document.execCommand("copy")
-      document.body.removeChild(textArea)
-      setBlockchainIdCopied(true)
-      setTimeout(() => setBlockchainIdCopied(false), 3000)
+  useEffect(() => {
+    const refresh = () => {
+      const alert = DemoResponseService.getSosAlerts().find(
+        (item) => item.touristId === userId && item.status !== "RESOLVED",
+      )
+      setActiveAlert(alert ?? null)
     }
+    refresh()
+    window.addEventListener("storage", refresh)
+    return () => window.removeEventListener("storage", refresh)
+  }, [userId])
+
+  const confirmSos = () => {
+    setIsCreating(true)
+    const alert = DemoResponseService.createSosAlert(userId, touristName)
+    setActiveAlert(alert)
+    setShowConfirmation(false)
+    setIsCreating(false)
   }
 
-  const handleQuickSOS = async () => {
-    setIsLoading(true)
-
-    try {
-      const alert = await EmergencyService.sendQuickSOS(userId)
-      setLastAlert(alert)
-      setShowConfirmation(true)
-
-      // Auto-hide confirmation after 10 seconds
-      setTimeout(() => {
-        setShowConfirmation(false)
-      }, 10000)
-    } catch (error) {
-      console.error("Failed to send SOS:", error)
-      alert("Failed to send SOS alert. Please try again or call emergency services directly.")
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleEmergencyCall = (phoneNumber: string, contactName?: string) => {
-    setCallDetails({
-      phoneNumber,
-      contactName,
-      contactType: "emergency",
-    })
-    setShowCallInterface(true)
-  }
-
-  const handleCancelAlert = () => {
-    if (lastAlert) {
-      EmergencyService.updateAlertStatus(lastAlert.id, "cancelled")
-      setLastAlert(null)
-      setShowConfirmation(false)
-    }
-  }
-
-  if (showCallInterface && callDetails) {
+  if (activeAlert) {
     return (
-      <CallInterface
-        phoneNumber={callDetails.phoneNumber}
-        contactName={callDetails.contactName}
-        contactType={callDetails.contactType}
-        onClose={() => {
-          setShowCallInterface(false)
-          setCallDetails(null)
-        }}
-        location={lastAlert?.location ?? undefined}
-      />
-    )
-  }
-
-  if (showConfirmation && lastAlert) {
-    return (
-      <Card className="border-red-200 bg-red-50">
+      <Card className="border-rose-300 bg-rose-50 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-red-700">
-            <CheckCircle className="h-5 w-5" />
-            <span>SOS Alert Sent Successfully</span>
-          </CardTitle>
+          <CardTitle className="flex items-center gap-2 text-rose-800"><ShieldAlert className="h-5 w-5" /> SOS Alert Active</CardTitle>
+          <CardDescription className="text-rose-700">Your demo alert is visible in the SafeVoyage authority dashboard.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Alert>
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>Emergency request created locally. Contact and authority notification integrations are not configured yet.</AlertDescription>
-          </Alert>
-
-          {lastAlert.blockchainId && (
-            <div className="bg-white p-4 rounded-lg border border-blue-200">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-semibold text-blue-700">Blockchain Tracking ID:</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => copyBlockchainId(lastAlert.blockchainId!)}
-                  className="flex items-center space-x-1"
-                >
-                  <Copy className="h-3 w-3" />
-                  <span>{blockchainIdCopied ? "Copied!" : "Copy"}</span>
-                </Button>
-              </div>
-              <p className="font-mono text-sm bg-gray-100 p-2 rounded break-all">{lastAlert.blockchainId}</p>
-              <p className="text-xs text-muted-foreground mt-2">
-                Share this ID with emergency contacts for live location tracking
-              </p>
-            </div>
-          )}
-
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2 text-sm">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <span>Sent: {new Date(lastAlert.timestamp).toLocaleTimeString()}</span>
-            </div>
-
-            {lastAlert.location && (
-              <div className="flex items-center space-x-2 text-sm">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                <span>
-                  Location: {lastAlert.location.latitude.toFixed(4)}, {lastAlert.location.longitude.toFixed(4)}
-                </span>
-              </div>
-            )}
-
-            <div className="flex flex-wrap gap-2 mt-3">
-              {lastAlert.includePolice && <Badge variant="secondary">Police requested</Badge>}
-              {lastAlert.includeAmbulance && <Badge variant="secondary">Ambulance requested</Badge>}
-              {lastAlert.includeFire && <Badge variant="secondary">Fire department requested</Badge>}
-            </div>
+        <CardContent className="space-y-3 text-sm">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-lg bg-white/70 p-3"><p className="text-xs text-muted-foreground">Authority response</p><p className="mt-1 font-semibold text-rose-800">{activeAlert.status === "ACTIVE" ? "Pending" : activeAlert.status.replace("_", " ")}</p></div>
+            <div className="rounded-lg bg-white/70 p-3"><p className="text-xs text-muted-foreground">Created</p><p className="mt-1 flex items-center gap-1 font-medium"><Clock3 className="h-3.5 w-3.5" />{new Date(activeAlert.timestamp).toLocaleTimeString()}</p></div>
+            <div className="rounded-lg bg-white/70 p-3"><p className="text-xs text-muted-foreground">Severity</p><Badge variant="destructive" className="mt-1">{activeAlert.severity}</Badge></div>
           </div>
-
-          <div className="flex space-x-3">
-            <Button variant="outline" onClick={handleCancelAlert} className="flex-1 bg-transparent">
-              <X className="h-4 w-4 mr-2" />
-              Cancel Alert
-            </Button>
-            <Button onClick={() => setShowConfirmation(false)} className="flex-1">
-              Close
-            </Button>
-          </div>
+          <p className="flex items-center gap-2 text-xs text-rose-800"><MapPin className="h-3.5 w-3.5" />{activeAlert.location.address ?? `${activeAlert.location.latitude.toFixed(4)}, ${activeAlert.location.longitude.toFixed(4)}`}</p>
+          <p className="text-xs text-rose-700">Demo workflow only. No emergency service or external authority has been contacted.</p>
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <Card className="border-red-200">
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2 text-red-600">
-          <AlertTriangle className="h-5 w-5" />
-          <span>Emergency SOS</span>
-        </CardTitle>
-        <CardDescription>Create a local emergency request with your location for prototype testing</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            Only use in real emergencies. This will alert emergency services and your contacts.
-          </AlertDescription>
-        </Alert>
+    <>
+      <Card className="border-rose-300 bg-rose-50">
+        <CardHeader><CardTitle className="flex items-center gap-2 text-rose-800"><AlertTriangle className="h-5 w-5" /> Emergency SOS</CardTitle><CardDescription className="text-rose-700">Create a high-priority demo alert for the SafeVoyage authority dashboard.</CardDescription></CardHeader>
+        <CardContent><Button onClick={() => setShowConfirmation(true)} className="h-14 w-full bg-rose-600 text-base font-bold text-white hover:bg-rose-700"><AlertTriangle className="mr-2 h-5 w-5" /> Emergency SOS</Button><p className="mt-3 text-center text-xs text-rose-700">This creates a local demo alert. It does not contact emergency services.</p></CardContent>
+      </Card>
 
-        <Button
-          onClick={handleQuickSOS}
-          disabled={isLoading}
-          className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-6 text-lg"
-          size="lg"
-        >
-          {isLoading ? (
-            "Sending SOS..."
-          ) : (
-            <>
-              <AlertTriangle className="h-6 w-6 mr-2" />
-              SEND SOS ALERT
-            </>
-          )}
-        </Button>
-
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground mb-2">Or call emergency services directly:</p>
-          <div className="flex justify-center space-x-4">
-            <Button variant="outline" size="sm" onClick={() => handleEmergencyCall("911", "Emergency Services (US)")}>
-              <Phone className="h-3 w-3 mr-1" />
-              <span>911</span>
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => handleEmergencyCall("112", "Emergency Services (EU)")}>
-              <Phone className="h-3 w-3 mr-1" />
-              <span>112</span>
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+      {showConfirmation && <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/60 p-4"><Card className="w-full max-w-md shadow-2xl"><CardHeader><CardTitle className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-rose-600" /> Confirm emergency alert</CardTitle><CardDescription>This action creates a shared demo event for authority review.</CardDescription></CardHeader><CardContent className="space-y-5"><div className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900">This will create an emergency alert for the SafeVoyage authority dashboard.</div><div className="flex gap-3"><Button variant="outline" className="flex-1" onClick={() => setShowConfirmation(false)}>Cancel</Button><Button className="flex-1 bg-rose-600 text-white hover:bg-rose-700" onClick={confirmSos} disabled={isCreating}><CheckCircle2 className="mr-2 h-4 w-4" />{isCreating ? "Creating..." : "Confirm SOS"}</Button></div></CardContent></Card></div>}
+    </>
   )
 }
