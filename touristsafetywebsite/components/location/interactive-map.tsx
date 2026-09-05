@@ -354,7 +354,7 @@ export function InteractiveMap({ onLocationSelect, currentLocation, safetyZone }
             <Satellite className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-600 mb-2">No Location Data</h3>
             <p className="text-gray-500 mb-4">
-              Click "Get Current Location" to trace your exact GPS position and view it on the interactive map
+              Click &quot;Get Current Location&quot; to trace your exact GPS position and view it on the interactive map
             </p>
             <div className="text-xs text-gray-400 space-y-1">
               <p>• High-precision GPS tracking with satellite view</p>

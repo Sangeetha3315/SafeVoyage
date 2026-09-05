@@ -14,6 +14,7 @@ import {
   Award,
   Clock,
 } from "lucide-react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -32,9 +33,10 @@ export default function IntroPage({ onNavigate, userName }: IntroPageProps) {
           <div className="w-full h-full hero-gradient relative">
             {/* Background Image with Overlay */}
             <div className="absolute inset-0 opacity-40">
-              <img
+              <Image
                 src="/tourists-exploring-safely-with-guide--mountain-hik.jpg"
                 alt="Tourist Safety Guidance"
+                fill
                 className="w-full h-full object-cover parallax-bg"
               />
             </div>
@@ -348,7 +350,7 @@ export default function IntroPage({ onNavigate, userName }: IntroPageProps) {
                 <CardContent className="p-12">
                   <h3 className="text-3xl font-bold mb-6 text-foreground">Your Safety is Our Priority</h3>
                   <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-                    Every second counts in an emergency. SafeTour AI ensures you're never alone, no matter where your
+                    Every second counts in an emergency. SafeVoyage ensures you&apos;re never alone, no matter where your
                     travels take you. Join millions of travelers who trust our AI-powered safety network.
                   </p>
                   <Button

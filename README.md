@@ -122,7 +122,7 @@ npm run build
 npm run lint
 ```
 
-The build is configured to fail on TypeScript errors. The existing dependency set does not currently include a project-level ESLint installation; lint setup remains a small foundation task before CI enforcement.
+The build is configured to fail on TypeScript errors. ESLint is configured with the Next.js 14 ruleset and passes cleanly for the current prototype components.
 
 ## API Foundation
 

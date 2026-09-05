@@ -22,6 +22,53 @@ export function SafetyOverview({ userId }: SafetyOverviewProps) {
   const [safetyScore, setSafetyScore] = useState(0)
 
   useEffect(() => {
+    const calculateSafetyScore = (
+      currentLocation: LocationData | null,
+      contactCount: number,
+      trackingActive: boolean,
+    ) => {
+      let score = 0
+
+      // Location tracking (30 points)
+      if (currentLocation) score += 20
+      if (trackingActive) score += 10
+
+      // Emergency contacts (40 points)
+      if (contactCount >= 1) score += 20
+      if (contactCount >= 2) score += 10
+      if (contactCount >= 3) score += 10
+
+      // Safety zone (30 points)
+      if (currentLocation && LocationService.checkSafeZone(currentLocation).zone === "green") score += 30
+      else if (currentLocation) score += 15 // At least we have location
+
+      setSafetyScore(Math.min(score, 100))
+    }
+
+    const loadDashboardData = () => {
+      // Load location data
+      const lastLocation = LocationService.getLastKnownLocation()
+      if (lastLocation) {
+        setLocation(lastLocation)
+        setSafetyStatus(LocationService.checkSafeZone(lastLocation))
+      }
+
+      // Load tracking status
+      setIsTracking(LocationService.isTracking())
+
+      // Load emergency contacts
+      const contacts = EmergencyService.getEmergencyContacts()
+      setContactsCount(contacts.length)
+
+      // Load recent alerts
+      const alerts = EmergencyService.getSOSAlerts()
+      const recent = alerts.slice(-3).reverse() // Last 3 alerts, most recent first
+      setRecentAlerts(recent)
+
+      // Calculate safety score
+      calculateSafetyScore(lastLocation, contacts.length, LocationService.isTracking())
+    }
+
     // Load initial data
     loadDashboardData()
 
@@ -44,53 +91,6 @@ export function SafetyOverview({ userId }: SafetyOverviewProps) {
       clearInterval(interval)
     }
   }, [])
-
-  const loadDashboardData = () => {
-    // Load location data
-    const lastLocation = LocationService.getLastKnownLocation()
-    if (lastLocation) {
-      setLocation(lastLocation)
-      setSafetyStatus(LocationService.checkSafeZone(lastLocation))
-    }
-
-    // Load tracking status
-    setIsTracking(LocationService.isTracking())
-
-    // Load emergency contacts
-    const contacts = EmergencyService.getEmergencyContacts()
-    setContactsCount(contacts.length)
-
-    // Load recent alerts
-    const alerts = EmergencyService.getSOSAlerts()
-    const recent = alerts.slice(-3).reverse() // Last 3 alerts, most recent first
-    setRecentAlerts(recent)
-
-    // Calculate safety score
-    calculateSafetyScore(lastLocation, contacts.length, LocationService.isTracking())
-  }
-
-  const calculateSafetyScore = (
-    currentLocation: LocationData | null,
-    contactCount: number,
-    trackingActive: boolean,
-  ) => {
-    let score = 0
-
-    // Location tracking (30 points)
-    if (currentLocation) score += 20
-    if (trackingActive) score += 10
-
-    // Emergency contacts (40 points)
-    if (contactCount >= 1) score += 20
-    if (contactCount >= 2) score += 10
-    if (contactCount >= 3) score += 10
-
-    // Safety zone (30 points)
-    if (currentLocation && safetyStatus?.zone === "green") score += 30
-    else if (currentLocation) score += 15 // At least we have location
-
-    setSafetyScore(Math.min(score, 100))
-  }
 
   const getSafetyScoreColor = (score: number) => {
     if (score >= 80) return "text-green-600"
