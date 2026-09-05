@@ -1,6 +1,6 @@
 import { DemoRoute } from "@/components/auth/demo-route"
-import { PhasePlaceholder } from "@/components/foundation/phase-placeholder"
+import { LiveAlerts } from "@/components/authority/live-alerts"
 
 export default function AuthorityAlertsPage() {
-  return <DemoRoute allowedRole="authority"><PhasePlaceholder title="Live alerts" description="Demo alert stream for authority triage and response coordination." /></DemoRoute>
+  return <DemoRoute allowedRole="authority"><LiveAlerts /></DemoRoute>
 }

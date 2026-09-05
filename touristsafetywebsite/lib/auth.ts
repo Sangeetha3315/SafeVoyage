@@ -4,7 +4,7 @@ export interface User {
   id: string
   name: string
   email: string
-  role: "tourist" | "authority"
+  role: "tourist" | "authority" | "admin"
   createdAt: Date
 }
 
@@ -19,6 +19,7 @@ type StoredUser = Omit<User, "role"> & { role: "user" | "administrator" | User["
 export class AuthService {
   private static readonly USERS_KEY = "safetour_users"
   private static readonly CURRENT_USER_KEY = "safetour_current_user"
+  private static readonly LEGACY_FALLBACK_KEY = "safetour_legacy_fallback"
   private static readonly SESSION_TIMEOUT = 24 * 60 * 60 * 1000 // 24 hours
   private static readonly DEMO_ACCOUNTS = {
     tourist: {
@@ -81,6 +82,16 @@ export class AuthService {
     }
   }
 
+  static setLegacyFallbackMode(enabled: boolean): void {
+    if (typeof window === "undefined") return
+    if (enabled) sessionStorage.setItem(this.LEGACY_FALLBACK_KEY, "true")
+    else sessionStorage.removeItem(this.LEGACY_FALLBACK_KEY)
+  }
+
+  static isLegacyFallbackMode(): boolean {
+    return typeof window !== "undefined" && sessionStorage.getItem(this.LEGACY_FALLBACK_KEY) === "true"
+  }
+
   static signUp(email: string, password: string, name: string, role: User["role"]): { success: boolean; user?: User; error?: string } {
     const users = this.getUsers()
 
@@ -108,7 +119,7 @@ export class AuthService {
   static signIn(
     email: string,
     password: string,
-    role: User["role"],
+    role: "tourist" | "authority",
   ): Promise<{ success: boolean; user?: User; error?: string }> {
     return this.verifyDemoCredentials(email, password, role).then((isValid) => {
       if (!isValid) return { success: false, error: "Use one of the documented demo accounts and passwords." }
@@ -122,11 +133,12 @@ export class AuthService {
         createdAt: new Date("2026-01-01T00:00:00.000Z"),
       }
       this.setCurrentUser(user)
+      this.setLegacyFallbackMode(true)
       return { success: true, user }
     })
   }
 
-  private static async verifyDemoCredentials(email: string, password: string, role: User["role"]): Promise<boolean> {
+  private static async verifyDemoCredentials(email: string, password: string, role: "tourist" | "authority"): Promise<boolean> {
     if (typeof window === "undefined") return false
 
     const account = this.DEMO_ACCOUNTS[role]
@@ -138,6 +150,7 @@ export class AuthService {
 
   static signOut(): void {
     this.setCurrentUser(null)
+    this.setLegacyFallbackMode(false)
   }
 
   static isSessionValid(): boolean {

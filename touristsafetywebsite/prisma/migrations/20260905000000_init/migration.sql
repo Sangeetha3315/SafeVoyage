@@ -1,0 +1,23 @@
+-- Initial SafeVoyage database foundation. Generated from prisma/schema.prisma.
+CREATE TYPE "Role" AS ENUM ('TOURIST', 'AUTHORITY', 'ADMIN');
+CREATE TABLE "User" ("id" TEXT NOT NULL, "name" TEXT NOT NULL, "email" TEXT NOT NULL, "passwordHash" TEXT NOT NULL, "role" "Role" NOT NULL DEFAULT 'TOURIST', "phone" TEXT NOT NULL, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updatedAt" TIMESTAMP(3) NOT NULL, CONSTRAINT "User_pkey" PRIMARY KEY ("id"));
+CREATE TABLE "TouristProfile" ("id" TEXT NOT NULL, "userId" TEXT NOT NULL, "digitalTouristId" TEXT NOT NULL, "nationality" TEXT NOT NULL, "dateOfBirth" TIMESTAMP(3), "profileInformation" JSONB, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updatedAt" TIMESTAMP(3) NOT NULL, CONSTRAINT "TouristProfile_pkey" PRIMARY KEY ("id"));
+CREATE TABLE "EmergencyContact" ("id" TEXT NOT NULL, "touristId" TEXT NOT NULL, "name" TEXT NOT NULL, "phone" TEXT NOT NULL, "relationship" TEXT NOT NULL, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updatedAt" TIMESTAMP(3) NOT NULL, CONSTRAINT "EmergencyContact_pkey" PRIMARY KEY ("id"));
+CREATE TABLE "Session" ("id" TEXT NOT NULL, "userId" TEXT NOT NULL, "tokenHash" TEXT NOT NULL, "expiresAt" TIMESTAMP(3) NOT NULL, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, CONSTRAINT "Session_pkey" PRIMARY KEY ("id"));
+CREATE TABLE "AuditLog" ("id" TEXT NOT NULL, "userId" TEXT, "action" TEXT NOT NULL, "resource" TEXT NOT NULL, "resourceId" TEXT, "metadata" JSONB, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, CONSTRAINT "AuditLog_pkey" PRIMARY KEY ("id"));
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+CREATE INDEX "User_email_idx" ON "User"("email");
+CREATE INDEX "User_role_idx" ON "User"("role");
+CREATE UNIQUE INDEX "TouristProfile_userId_key" ON "TouristProfile"("userId");
+CREATE UNIQUE INDEX "TouristProfile_digitalTouristId_key" ON "TouristProfile"("digitalTouristId");
+CREATE INDEX "TouristProfile_userId_idx" ON "TouristProfile"("userId");
+CREATE INDEX "EmergencyContact_touristId_idx" ON "EmergencyContact"("touristId");
+CREATE UNIQUE INDEX "Session_tokenHash_key" ON "Session"("tokenHash");
+CREATE INDEX "Session_userId_idx" ON "Session"("userId");
+CREATE INDEX "Session_expiresAt_idx" ON "Session"("expiresAt");
+CREATE INDEX "AuditLog_userId_idx" ON "AuditLog"("userId");
+CREATE INDEX "AuditLog_createdAt_idx" ON "AuditLog"("createdAt");
+ALTER TABLE "TouristProfile" ADD CONSTRAINT "TouristProfile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "EmergencyContact" ADD CONSTRAINT "EmergencyContact_touristId_fkey" FOREIGN KEY ("touristId") REFERENCES "TouristProfile"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "AuditLog" ADD CONSTRAINT "AuditLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

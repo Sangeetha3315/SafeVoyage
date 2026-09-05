@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Shield, Eye, EyeOff, User, UserCog } from "lucide-react"
+import Link from "next/link"
 
 interface LoginFormProps {
   onLogin: (email: string, password: string, role: "tourist" | "authority") => void | Promise<void>
@@ -122,6 +123,7 @@ export function LoginForm({ onLogin }: LoginFormProps) {
             </Button>
           </div>
           <p className="mt-3 text-center text-xs text-muted-foreground">Demo only. No sensitive credentials are stored.</p>
+          <p className="mt-4 text-center text-sm text-muted-foreground">New to SafeVoyage? <Link href="/register" className="font-medium text-primary hover:underline">Create Tourist Account</Link></p>
         </CardContent>
       </Card>
     </div>

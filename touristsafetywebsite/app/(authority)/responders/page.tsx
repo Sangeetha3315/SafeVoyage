@@ -1,6 +1,6 @@
 import { DemoRoute } from "@/components/auth/demo-route"
-import { PhasePlaceholder } from "@/components/foundation/phase-placeholder"
+import { Responders } from "@/components/authority/responders"
 
 export default function AuthorityRespondersPage() {
-  return <DemoRoute allowedRole="authority"><PhasePlaceholder title="Responder network" description="Demo responder roster for authority coordination." /></DemoRoute>
+  return <DemoRoute allowedRole="authority"><Responders /></DemoRoute>
 }

@@ -1,6 +1,6 @@
 import { DemoRoute } from "@/components/auth/demo-route"
-import { PhasePlaceholder } from "@/components/foundation/phase-placeholder"
+import { TouristProfile } from "@/components/tourist/tourist-profile"
 
 export default function TouristProfilePage() {
-  return <DemoRoute allowedRole="tourist"><PhasePlaceholder title="Tourist profile" description="Demo tourist profile workspace." /></DemoRoute>
+  return <DemoRoute allowedRole="tourist"><TouristProfile /></DemoRoute>
 }

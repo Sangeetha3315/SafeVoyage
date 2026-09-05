@@ -1,5 +1,5 @@
-import { PhasePlaceholder } from "@/components/foundation/phase-placeholder"
+import { RegisterForm } from "@/components/auth/register-form"
 
 export default function RegisterPage() {
-  return <PhasePlaceholder title="Create a SafeVoyage account" description="Account registration is planned for Phase 2." />
+  return <RegisterForm />
 }

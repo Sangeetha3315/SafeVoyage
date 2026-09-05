@@ -8,6 +8,8 @@ const serverEnvSchema = z.object({
   AUTH_SECRET: z.string().optional(),
   GEOCODING_API_URL: z.string().url().default("https://api.bigdatacloud.net/data/reverse-geocode-client"),
   AI_API_KEY: z.string().optional(),
+  AI_MODEL: z.string().optional(),
+  AI_BASE_URL: z.string().url().optional(),
   SMS_PROVIDER_API_KEY: z.string().optional(),
   EMAIL_PROVIDER_API_KEY: z.string().optional(),
 })

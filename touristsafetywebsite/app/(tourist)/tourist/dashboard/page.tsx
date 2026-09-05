@@ -1,8 +1,8 @@
 import { DemoRoute } from "@/components/auth/demo-route"
-import { TouristDashboardView } from "@/components/auth/demo-views"
+import { TouristDashboard } from "@/components/tourist/tourist-dashboard"
 
 export default function TouristDashboardPage() {
   return (
-    <DemoRoute allowedRole="tourist"><TouristDashboardView /></DemoRoute>
+    <DemoRoute allowedRole="tourist"><TouristDashboard /></DemoRoute>
   )
 }

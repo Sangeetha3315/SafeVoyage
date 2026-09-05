@@ -131,7 +131,7 @@ export class LocationService {
             timestamp: new Date(),
           }
 
-          // Try to get address from coordinates
+          // Resolve the address through the server route so provider configuration stays server-side.
           try {
             locationData.address = await this.getAddressFromCoords(locationData.latitude, locationData.longitude)
           } catch (error) {
@@ -273,17 +273,10 @@ export class LocationService {
   }
 
   static async getAddressFromCoords(lat: number, lng: number): Promise<string> {
-    // Using a simple reverse geocoding approach
-    // In production, use a proper geocoding service like Google Maps API
-    try {
-      const response = await fetch(
-        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`,
-      )
-      const data = await response.json()
-      return data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`
-    } catch (error) {
-      return `${lat.toFixed(4)}, ${lng.toFixed(4)}`
-    }
+    const response = await fetch(`/api/location/reverse-geocode?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}`)
+    if (!response.ok) throw new Error("Reverse geocoding failed")
+    const data = (await response.json()) as { address?: string }
+    return data.address || `${lat.toFixed(5)}, ${lng.toFixed(5)}`
   }
 
   static checkSafeZone(location: LocationData): SafetyZoneInfo {

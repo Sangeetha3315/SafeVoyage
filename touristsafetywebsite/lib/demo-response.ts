@@ -41,11 +41,12 @@ export interface DemoIncident {
 
 const DEMO_SOS_KEY = "safevoyage_demo_sos_alerts"
 const DEMO_INCIDENTS_KEY = "safevoyage_demo_incidents"
+const DEMO_RESPONDERS_KEY = "safevoyage_demo_responders"
 
 export const DEMO_RESPONDERS: DemoResponder[] = [
   { id: "responder-morgan", name: "Jordan Morgan", role: "Field responder", status: "Available", eta: "6 min" },
   { id: "responder-rivera", name: "Alex Rivera", role: "Safety coordinator", status: "Available", eta: "10 min" },
-  { id: "responder-patel", name: "Samir Patel", role: "Mobile support lead", status: "On response", eta: "14 min" },
+  { id: "responder-patel", name: "Samir Patel", role: "Mobile support lead", status: "Available", eta: "14 min" },
 ]
 
 function read<T>(key: string): T[] {
@@ -58,6 +59,11 @@ function write<T>(key: string, value: T[]): void {
   if (typeof window === "undefined") return
   window.localStorage.setItem(key, JSON.stringify(value))
   window.dispatchEvent(new StorageEvent("storage", { key, newValue: JSON.stringify(value) }))
+}
+
+function getResponders(): DemoResponder[] {
+  const saved = read<DemoResponder>(DEMO_RESPONDERS_KEY)
+  return saved.length > 0 ? saved : DEMO_RESPONDERS.map((responder) => ({ ...responder }))
 }
 
 function createDemoLocation(): LocationData {
@@ -73,6 +79,8 @@ function createDemoLocation(): LocationData {
 }
 
 export const DemoResponseService = {
+  getResponders,
+
   getSosAlerts(): DemoSosAlert[] {
     return read<DemoSosAlert>(DEMO_SOS_KEY)
   },
@@ -96,6 +104,12 @@ export const DemoResponseService = {
     const alert = alerts.find((item) => item.id === id)
     if (!alert) return null
     alert.status = status
+    if (status === "RESOLVED" && alert.responderId) {
+      const responders = getResponders().map((responder) =>
+        responder.id === alert.responderId ? { ...responder, status: "Available" as const } : responder,
+      )
+      write(DEMO_RESPONDERS_KEY, responders)
+    }
     write(DEMO_SOS_KEY, alerts)
     return alert
   },
@@ -107,6 +121,10 @@ export const DemoResponseService = {
     alert.responderId = responder.id
     alert.responderName = responder.name
     alert.status = "RESPONDER_ASSIGNED"
+    const responders = getResponders().map((item) =>
+      item.id === responder.id ? { ...item, status: "On response" as const } : item,
+    )
+    write(DEMO_RESPONDERS_KEY, responders)
     write(DEMO_SOS_KEY, alerts)
     return alert
   },

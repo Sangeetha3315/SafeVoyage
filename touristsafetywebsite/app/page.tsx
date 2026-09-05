@@ -52,8 +52,8 @@ export default function Page() {
     return <DemoLoginPage />
   }
 
-  if (user.role === "authority") {
-    router.replace("/authority/dashboard")
+  if (user.role === "authority" || user.role === "admin") {
+    router.replace(user.role === "admin" ? "/admin/dashboard" : "/authority/dashboard")
     return null
   }
 
